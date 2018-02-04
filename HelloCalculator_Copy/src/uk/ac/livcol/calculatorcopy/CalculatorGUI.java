@@ -243,7 +243,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
             	return;
         }
     		
-    	displayField.setText(Double.toString(calculationResult));
+    	displayField.setText(resultFormat.format(calculationResult));
     } 
     
     
