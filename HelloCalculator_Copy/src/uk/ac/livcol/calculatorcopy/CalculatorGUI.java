@@ -114,6 +114,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
 
     
+    /**
+     * The method addDisplayField adds the calculator's display 
+     * into a JPanel.
+     * @param panel A panel to place the display field into.
+     */
     private void addDisplayField(JPanel panel)
     {
 		displayField = new JTextField();
@@ -130,6 +135,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
+    /**
+     * The method setButtonPanelAttributes some attributes 
+     * of the JPanel passed to it.
+     * @param panel A panel to set attributes for.
+     */
     private void setButtonPanelAttributes(JPanel panel) 
     {
 		panel.setBackground(Color.PINK);
@@ -138,6 +148,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	}
     
     
+    /**
+     * The method setFrameAttributes some attributes 
+     * of the JFrame passed to it.
+     * @param frame A frame to set attributes for.
+     */
     private void setFrameAttributes(JFrame frame) 
     {
 		frame.setBackground(Color.PINK);
@@ -148,6 +163,12 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		frame.addKeyListener(this);
 	}
     
+    
+    /**
+     * The method setPaddingPanelAttributes some attributes 
+     * of the JPanel passed to it.
+     * @param panel A panel to set attributes for.
+     */
     private void setPaddingPanelAttributes(JPanel panel)
     {
 		panel.setLayout(new GridLayout(7, 0, 10, 5));
@@ -157,6 +178,13 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
+    /**
+     * The method addButton adds a JButton to the JPanel passed to it.
+     * @param panel A JPanel to add a button to.
+     * @param text The text to add to the button.
+     * @param fontWeight The weight of the button's text font.
+     * @param fontSize The size of the button's font.
+     */
     private void addButton(JPanel panel, String text, int fontWeight, int fontSize) 
     {
 		JButton btn = new JButton(text);
@@ -169,6 +197,9 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	}
     
     
+    /**
+     * The method clearContents clears the contents of the display field.
+     */
     private void clearContents()
     {
     	displayField.setText("");
@@ -178,6 +209,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
+    /**
+     * The method addToDisplayField adds a character to the
+     * end of the display field.
+     * @param n A character to add to the display field.
+     */
     private void addToDisplayField(String n)
     {
     	String newValue = displayField.getText() + n;
@@ -185,7 +221,12 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
-    private double getDisplayContents() {
+    /**
+     * The method getDisplayContentsAsDouble returns the contents of
+     * the display field as a double.
+     * @return The contents of the display field as a double.
+     */
+    private double getDisplayContentsAsDouble() {
 		double contents = 0.0;
 		
 		try {
@@ -197,11 +238,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	}
     
     
-    
-    /* To do
-     * get the contents of the field and perform the operation then
-     * display the result 
-     */
+    /* Only partially implemented */
     private void performCalculation(String operatorString)
     {
     	if(operatorString.equals("=")) {
@@ -215,7 +252,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 			return;
 		}
         
-        lastNumberEntered = getDisplayContents();
+        lastNumberEntered = getDisplayContentsAsDouble();
         
         switch(currentOperation)
         {
@@ -249,21 +286,12 @@ public class CalculatorGUI implements ActionListener, KeyListener
     } 
     
     
-    private void addDecimalPoint()
-    {
-		String test = displayField.getText();
-		if (test.contains(".")) {
-			return;
-		}
-		else if (test.length()==0) {
-			addToDisplayField("0.");
-		}
-		else {
-			addToDisplayField(".");
-		}
-    }
+
     
-    
+    /**
+     * The method deleteEndCharacter deletes the end character
+     * from the text shown in the display field.
+     */
     private void deleteEndCharacter() 
     {
 		String test = displayField.getText();
@@ -277,6 +305,49 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	}
     
     
+    /**
+     * The method doNumberPress adds a number to
+     * the display field.
+     * @param input A number character to add to the display field.
+     */
+    private void doNumberPress(String input)
+    {
+		if(!lastPressed.equals("Number")) {
+			displayField.setText("");
+		}
+		lastPressed = "Number";
+		addToDisplayField(input);
+    }
+    
+    
+    /**
+     * The method doDecimalPointPress adds a decimal point to the
+     * display. If no numbers have been entered previously, it
+     * adds a zero before the point.
+     */
+    private void doDecimalPointPress()
+    {
+		if(!lastPressed.equals("Number")) {
+			displayField.setText("");
+		}
+		lastPressed = "Number";
+		
+		String test = displayField.getText();
+		if (test.contains(".")) {
+			return;
+		}
+		else if (test.length()==0) {
+			addToDisplayField("0.");
+		}
+		else {
+			addToDisplayField(".");
+		}
+    }
+    
+    
+    /**
+     * The method actionPerformed deals with button press events.
+     */
 	@Override
 	public void actionPerformed(ActionEvent ae) 
 	{
@@ -287,30 +358,13 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		{
 			case "9": case "8": case "7": case "6": case "5":
 			case "4": case "3": case "2": case "1": case "0":
-				if(!lastPressed.equals("Number")) {
-					displayField.setText("");
-				}
-				lastPressed = "Number";
-				addToDisplayField(pressString);
+				doNumberPress(pressString);
 				break;
 			case ".":
-				if(!lastPressed.equals("Number")) {
-					displayField.setText("");
-				}
-				lastPressed = "Number";
-				addDecimalPoint();
+				doDecimalPointPress();
 				break;
-			/* To do
-			 * For the operations 
-             * get current
-             * get input value
-             * perform op on sum
-             * set current to operator
-			 * */
-			case "/":
-			case "X":
-			case "-":
-			case "+":
+
+			case "/": case "X": case "-": case "+":
 				performCalculation(pressString);
 				
 				if(lastPressed.equals("None")) {
@@ -334,12 +388,23 @@ public class CalculatorGUI implements ActionListener, KeyListener
 			case "C":
 				clearContents();
 				break;
+			case "MC":
+				break;
+			case "MR":
+				break;
+			case "M-":
+				break;
+			case "M+":
+				break;
 			default:
 				break;
 		}
 	}
 
 
+	/**
+	 * The method keyPressed deals with key press events.
+	 */
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
@@ -356,22 +421,16 @@ public class CalculatorGUI implements ActionListener, KeyListener
         else
     		input = e.getKeyChar();
 				
+		if(input == '*')
+			input = 'X';
+        
 		if(Character.isDigit(input)) 
 		{
-			if(!lastPressed.equals("Number")) {
-				displayField.setText("");
-			}
-			lastPressed = "Number";
-			addToDisplayField("" + input);  /* This converts it to the String required by the method */
+			doNumberPress("" + input);
 		}
 		else if (input == '.') 
 		{
-			if(!lastPressed.equals("Number")) {
-				displayField.setText("");
-			}
-			
-			lastPressed = "Number";
-			addDecimalPoint();
+			doDecimalPointPress();
 		}
 		else if (input == '\b') 
 		{
@@ -383,48 +442,41 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		}
 		else 
 		{
-			if(input == '*') {
-				input = 'X';
-			}
-				
-			
 			switch(input)
 			{
-			case '/':
-			case 'X':
-			case '-':
-			case '+':
-				performCalculation("" + input);
-				
-				if(lastPressed.equals("None")) {
-					currentOperation = "None";
-					calculationResult = 0.0;
-					lastNumberEntered = 0.0;
-				}
-				else {
-					currentOperation = "" + input;
-				}
-    				
-				break;
-			case '%':
-				break;
-			case '=':
-				break;
-			default:
-				break;
+				case '/': case 'X': case '-': case '+':
+					performCalculation("" + input);
+					
+					if(lastPressed.equals("None")) {
+						currentOperation = "None";
+						calculationResult = 0.0;
+						lastNumberEntered = 0.0;
+					} else {
+						currentOperation = "" + input;
+					}
+	    				
+					break;
+				case '%':
+					break;
+				case '=':
+					break;
+				default:
+					break;
 			}
 		}
 	}
 
 
+	/**
+	 * Required by KeyListener interface
+	 */
 	@Override
-	public void keyReleased(KeyEvent e) {
-		return;
-	}
+	public void keyReleased(KeyEvent e) { ; }
 
 
+	/**
+	 * Required by KeyListener interface
+	 */
 	@Override
-	public void keyTyped(KeyEvent e) {
-		return;
-	}
+	public void keyTyped(KeyEvent e) { ; }
 }
