@@ -54,6 +54,16 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		addDisplayField(displayPanel);
 		
 		/* Create the button panels */
+		JPanel buttonPanel_0 = new JPanel();
+		setButtonPanelAttributes(buttonPanel_0);
+		paddingPanel.add(buttonPanel_0);
+		
+		addButton(buttonPanel_0, "MC", Font.PLAIN, 14);
+		addButton(buttonPanel_0, "MR", Font.PLAIN, 14);
+		addButton(buttonPanel_0, "M-", Font.PLAIN, 14);
+		addButton(buttonPanel_0, "M+", Font.PLAIN, 14);
+		
+		
 		JPanel buttonPanel_1 = new JPanel();
 		setButtonPanelAttributes(buttonPanel_1);
 		paddingPanel.add(buttonPanel_1);
@@ -140,7 +150,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     
     private void setPaddingPanelAttributes(JPanel panel)
     {
-		panel.setLayout(new GridLayout(6, 0, 10, 5));
+		panel.setLayout(new GridLayout(7, 0, 10, 5));
 		panel.setBackground(Color.PINK);
 		panel.setBorder(new EmptyBorder(15, 15, 25, 15));
         panel.addKeyListener(this);
