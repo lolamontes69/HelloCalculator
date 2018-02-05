@@ -186,13 +186,12 @@ public class CalculatorGUI implements ActionListener, KeyListener
     
     
     private double getDisplayContents() {
-		double contents = 0;
+		double contents = 0.0;
 		
 		try {
 			contents = Double.parseDouble(displayField.getText());
-		} catch (Exception e) {
-			contents = 0.0;
-		}
+		} 
+		catch (Exception e) { ; }
 		
 		return contents;
 	}
@@ -216,43 +215,36 @@ public class CalculatorGUI implements ActionListener, KeyListener
 			return;
 		}
         
+        lastNumberEntered = getDisplayContents();
+        
         switch(currentOperation)
         {
             case "/":
-            	lastNumberEntered = getDisplayContents();
-
             	if(lastNumberEntered == 0.0)
             	{
             		displayField.setText("Cannot divide by 0");
             		lastPressed = "None";
             		return;
             	}
-            	
             	calculationResult = calculationResult / lastNumberEntered;
-            	lastPressed = "Operator";
         	    break;
             case "X":
-            	lastNumberEntered = getDisplayContents();
             	calculationResult = calculationResult * lastNumberEntered;
-            	lastPressed = "Operator";
         	    break;
             case "+":
-            	lastNumberEntered = getDisplayContents();
             	calculationResult = calculationResult + lastNumberEntered;
-            	lastPressed = "Operator";
         	    break;
             case "-":
-            	lastNumberEntered = getDisplayContents();
             	calculationResult = calculationResult - lastNumberEntered;
-            	lastPressed = "Operator";
         	    break;
             default:
-            	lastNumberEntered = getDisplayContents();
             	calculationResult = lastNumberEntered;
             	lastPressed = "Operator";
             	return;
         }
     		
+        lastPressed = "Operator";
+        
     	displayField.setText(resultFormat.format(calculationResult));
     } 
     
@@ -351,14 +343,21 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e) 
 	{
+		char input;
+		
 		/* If the user has pressed the escape key quit the application */
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			System.exit(0);
 		}
 		
-		char input = e.getKeyChar();
+		/* Use the ENTER press as the '=' key */
+        if(e.getKeyCode() == KeyEvent.VK_ENTER)
+        	input = '=';
+        else
+    		input = e.getKeyChar();
 				
-		if(Character.isDigit(input)) {
+		if(Character.isDigit(input)) 
+		{
 			if(!lastPressed.equals("Number")) {
 				displayField.setText("");
 			}
@@ -382,7 +381,8 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		{
 			clearContents();
 		}
-		else {
+		else 
+		{
 			if(input == '*') {
 				input = 'X';
 			}
