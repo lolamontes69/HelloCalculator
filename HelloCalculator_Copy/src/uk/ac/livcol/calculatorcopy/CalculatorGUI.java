@@ -23,6 +23,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 {
 	private double calculationResult;
 	private double lastNumberEntered;
+	private double memoryValue;
 	
 	private String currentOperation;
 	private String lastPressed;
@@ -34,6 +35,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     {
     	calculationResult = 0.0;
     	lastNumberEntered = 0.0;
+    	memoryValue = 0.0;
     	currentOperation = "None";
     	lastPressed = "None";
     	
@@ -262,6 +264,10 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
+    /**
+     * The method doSquareRoot calculates and shows the square root
+     * of the current number in the display area.
+     */
     private void doSquareRoot()
     {
     	double currentlyDisplayed = getDisplayContentsAsDouble();
@@ -316,7 +322,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
-    /* Only partially implemented - needs % added*/
+    /* Only partially implemented - needs % added */
     private void performCalculation(String operatorString)
     {
     	if(operatorString.equals("=")) {
@@ -474,12 +480,17 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				clearContents();
 				break;
 			case "MC":
+				memoryValue = 0.0;
 				break;
 			case "MR":
+				displayField.setText(resultFormat.format(memoryValue));
+				lastPressed = "Number";
 				break;
 			case "M-":
+				memoryValue = memoryValue - getDisplayContentsAsDouble();
 				break;
 			case "M+":
+				memoryValue = memoryValue + getDisplayContentsAsDouble();
 				break;
 			default:
 				break;
