@@ -128,7 +128,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		displayField.setBackground(Color.WHITE);
 		displayField.setFont(new Font("Tahoma", Font.PLAIN, 24));
 		displayField.setHorizontalAlignment(SwingConstants.RIGHT);
-		displayField.setText("");
+		displayField.setText("0");
 		displayField.addKeyListener(this);
 		
 		panel.add(displayField);
@@ -202,9 +202,10 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void clearContents()
     {
-    	displayField.setText("");
+    	displayField.setText("0");
     	lastNumberEntered = 0.0;
     	calculationResult = 0.0;
+    	lastPressed = "None";
     	currentOperation = "None";
     }
     
@@ -238,13 +239,91 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	}
     
     
-    /* Only partially implemented */
+    /**
+     * The method toggleSign negates the number currently displayed.
+     */
+    private void toggleSign()
+    {
+    	double currentlyDisplayed = getDisplayContentsAsDouble();
+    	if(currentlyDisplayed==0.0)
+    		return;
+    	else if(currentlyDisplayed < 0)
+    		currentlyDisplayed = Math.abs(currentlyDisplayed);
+    	else {
+			currentlyDisplayed = currentlyDisplayed * -1.0;
+		}
+    	
+    	displayField.setText(resultFormat.format(currentlyDisplayed));
+    	
+    	/* This behaviour mimics the Windows calculator */
+        if (!lastPressed.equals("Number")) {
+			lastNumberEntered = currentlyDisplayed;
+		}
+    }
+    
+    
+    private void doSquareRoot()
+    {
+    	double currentlyDisplayed = getDisplayContentsAsDouble();
+    	if(currentlyDisplayed < 0.0) {
+     		displayField.setText("Math Domain Error");
+     		lastPressed = "None";
+     		return;
+    	}
+        
+        currentlyDisplayed = Math.sqrt(currentlyDisplayed);
+        displayField.setText(resultFormat.format(currentlyDisplayed));
+    }
+    
+    
+    /**
+     * The method doEqualsoperation returns the adds of the current
+     * operation to the display.
+     */
+    private void doEqualsOperation()
+    {
+    	if(lastPressed.equals("Number"))
+    	    	 lastNumberEntered = getDisplayContentsAsDouble();
+        
+        switch(currentOperation)
+        {
+            case "/":
+             	if(lastNumberEntered == 0.0)
+             	{
+             		displayField.setText("Cannot divide by 0");
+             		lastPressed = "None";
+             		return;
+             	}
+             	calculationResult = calculationResult / lastNumberEntered;
+         	    break;
+            case "X":
+             	calculationResult = calculationResult * lastNumberEntered;
+         	    break;
+            case "+":
+             	calculationResult = calculationResult + lastNumberEntered;
+         	    break;
+            case "-":
+             	calculationResult = calculationResult - lastNumberEntered;
+         	    break;
+            default:
+             	calculationResult = lastNumberEntered;
+             	return;
+         }
+         
+     	 displayField.setText(resultFormat.format(calculationResult));
+     	 
+     	 lastPressed = "Equals";
+    }
+    
+    
+    /* Only partially implemented - needs % added*/
     private void performCalculation(String operatorString)
     {
     	if(operatorString.equals("=")) {
     		if(currentOperation.equals("None"))
     			return;
     		else {
+    			doEqualsOperation();
 				return;
 			}
     	}
@@ -364,7 +443,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				doDecimalPointPress();
 				break;
 
-			case "/": case "X": case "-": case "+":
+			case "/": case "X": case "-": case "+": case "=":
 				performCalculation(pressString);
 				
 				if(lastPressed.equals("None")) {
@@ -372,18 +451,24 @@ public class CalculatorGUI implements ActionListener, KeyListener
 					calculationResult = 0.0;
 					lastNumberEntered = 0.0;
 				}
-				else {
+				else if(!pressString.equals("="))
+				{
 					currentOperation = pressString;
 				}
     				
 				break;
 			case "%":
 				break;
-			case "=":
-				break;
 			case "-/+":
+				toggleSign();
 				break;
 			case "SQRT":
+				doSquareRoot();
+				if(lastPressed.equals("None")) {
+					currentOperation = "None";
+					calculationResult = 0.0;
+					lastNumberEntered = 0.0;
+				}
 				break;
 			case "C":
 				clearContents();
@@ -444,21 +529,21 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		{
 			switch(input)
 			{
-				case '/': case 'X': case '-': case '+':
+				case '/': case 'X': case '-': case '+': case '=':
 					performCalculation("" + input);
 					
 					if(lastPressed.equals("None")) {
 						currentOperation = "None";
 						calculationResult = 0.0;
 						lastNumberEntered = 0.0;
-					} else {
+					} 
+					else if(input != '=')
+					{
 						currentOperation = "" + input;
 					}
 	    				
 					break;
 				case '%':
-					break;
-				case '=':
 					break;
 				default:
 					break;
