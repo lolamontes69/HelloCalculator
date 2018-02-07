@@ -27,12 +27,14 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	
 	private String currentOperation;
 	private String lastPressed;
-	private DecimalFormat resultFormat = new DecimalFormat("#0.00");
+	
+	private DecimalFormat resultFormat = new DecimalFormat("#");
 	
 	private JTextField displayField;
 	
     public CalculatorGUI()
     {
+    	resultFormat.setMaximumFractionDigits(4);
     	calculationResult = 0.0;
     	lastNumberEntered = 0.0;
     	memoryValue = 0.0;
@@ -48,7 +50,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		
 		/* Create the display panel */
 		JPanel displayPanel = new JPanel();
-		displayPanel.setBackground(Color.PINK);
+		displayPanel.setBackground(UIManager.getColor("control"));
 		displayPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
 		paddingPanel.add(displayPanel);
 		displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
@@ -60,10 +62,10 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		setButtonPanelAttributes(buttonPanel_0);
 		paddingPanel.add(buttonPanel_0);
 		
-		addButton(buttonPanel_0, "MC", Font.PLAIN, 14);
-		addButton(buttonPanel_0, "MR", Font.PLAIN, 14);
-		addButton(buttonPanel_0, "M-", Font.PLAIN, 14);
-		addButton(buttonPanel_0, "M+", Font.PLAIN, 14);
+		addButton(buttonPanel_0, "MC", Font.PLAIN, 18);
+		addButton(buttonPanel_0, "MR", Font.PLAIN, 18);
+		addButton(buttonPanel_0, "M-", Font.PLAIN, 18);
+		addButton(buttonPanel_0, "M+", Font.PLAIN, 18);
 		
 		
 		JPanel buttonPanel_1 = new JPanel();
@@ -71,43 +73,43 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		paddingPanel.add(buttonPanel_1);
 		
 		addButton(buttonPanel_1, "C", Font.PLAIN, 18);
-		addButton(buttonPanel_1, "-/+", Font.PLAIN, 11);
+		addButton(buttonPanel_1, "-/+", Font.PLAIN, 16);
 		addButton(buttonPanel_1, "%", Font.PLAIN, 18);
-		addButton(buttonPanel_1, "SQRT", Font.PLAIN, 8);
+		addButton(buttonPanel_1, "SQRT", Font.PLAIN, 14);
 		
 		JPanel buttonPanel_2 = new JPanel();
 		setButtonPanelAttributes(buttonPanel_2);
 		paddingPanel.add(buttonPanel_2);
 
-		addButton(buttonPanel_2, "7", Font.PLAIN, 18);
-		addButton(buttonPanel_2, "8", Font.PLAIN, 18);
-		addButton(buttonPanel_2, "9", Font.PLAIN, 18);
+		addButton(buttonPanel_2, "7", Font.PLAIN, 28);
+		addButton(buttonPanel_2, "8", Font.PLAIN, 28);
+		addButton(buttonPanel_2, "9", Font.PLAIN, 28);
 		addButton(buttonPanel_2, "/", Font.PLAIN, 18);
 		
 		JPanel buttonPanel_3 = new JPanel();
 		setButtonPanelAttributes(buttonPanel_3);
 		paddingPanel.add(buttonPanel_3);
 
-		addButton(buttonPanel_3, "4", Font.PLAIN, 18);
-		addButton(buttonPanel_3, "5", Font.PLAIN, 18);
-		addButton(buttonPanel_3, "6", Font.PLAIN, 18);
+		addButton(buttonPanel_3, "4", Font.PLAIN, 28);
+		addButton(buttonPanel_3, "5", Font.PLAIN, 28);
+		addButton(buttonPanel_3, "6", Font.PLAIN, 28);
 		addButton(buttonPanel_3, "X", Font.PLAIN, 18);
 		
 		JPanel buttonPanel_4 = new JPanel();
 		setButtonPanelAttributes(buttonPanel_4);
 		paddingPanel.add(buttonPanel_4);
 	    
-		addButton(buttonPanel_4, "1", Font.PLAIN, 18);
-		addButton(buttonPanel_4, "2", Font.PLAIN, 18);		
-		addButton(buttonPanel_4, "3", Font.PLAIN, 18);
+		addButton(buttonPanel_4, "1", Font.PLAIN, 28);
+		addButton(buttonPanel_4, "2", Font.PLAIN, 28);		
+		addButton(buttonPanel_4, "3", Font.PLAIN, 28);
 		addButton(buttonPanel_4, "-", Font.PLAIN, 18);
 		
 		JPanel buttonPanel_5 = new JPanel();
 		setButtonPanelAttributes(buttonPanel_5);
 		paddingPanel.add(buttonPanel_5);
 		
-		addButton(buttonPanel_5, "0", Font.PLAIN, 18);
-		addButton(buttonPanel_5, ".", Font.PLAIN, 18);
+		addButton(buttonPanel_5, "0", Font.PLAIN, 28);
+		addButton(buttonPanel_5, ".", Font.BOLD, 18);
 		addButton(buttonPanel_5, "=", Font.PLAIN, 18);
 		addButton(buttonPanel_5, "+", Font.PLAIN, 18);
 		
@@ -122,13 +124,14 @@ public class CalculatorGUI implements ActionListener, KeyListener
      * @param panel A panel to place the display field into.
      */
     private void addDisplayField(JPanel panel)
-    {
+    {	
 		displayField = new JTextField();
 		displayField.setEnabled(true);
 		displayField.setEditable(false);
 		displayField.setColumns(11);
+		displayField.setMargin(new Insets(1,3,1,3));
 		displayField.setBackground(Color.WHITE);
-		displayField.setFont(new Font("Tahoma", Font.PLAIN, 24));
+		displayField.setFont(new Font("Dialog", Font.PLAIN, 24));
 		displayField.setHorizontalAlignment(SwingConstants.RIGHT);
 		displayField.setText("0");
 		displayField.addKeyListener(this);
@@ -144,7 +147,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void setButtonPanelAttributes(JPanel panel) 
     {
-		panel.setBackground(Color.PINK);
+		panel.setBackground(UIManager.getColor("control"));
 		panel.setLayout(new GridLayout(0, 4, 5, 0));
 		panel.addKeyListener(this);
 	}
@@ -157,7 +160,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void setFrameAttributes(JFrame frame) 
     {
-		frame.setBackground(Color.PINK);
+		frame.setBackground(UIManager.getColor("control"));
 		frame.setResizable(false);
 		frame.setSize(270, 450);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -174,7 +177,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     private void setPaddingPanelAttributes(JPanel panel)
     {
 		panel.setLayout(new GridLayout(7, 0, 10, 5));
-		panel.setBackground(Color.PINK);
+		panel.setBackground(UIManager.getColor("control"));
 		panel.setBorder(new EmptyBorder(15, 15, 25, 15));
         panel.addKeyListener(this);
     }
@@ -190,8 +193,9 @@ public class CalculatorGUI implements ActionListener, KeyListener
     private void addButton(JPanel panel, String text, int fontWeight, int fontSize) 
     {
 		JButton btn = new JButton(text);
-		btn.setBackground(new Color(204, 204, 255));
-		btn.setFont(new Font("Tahoma", fontWeight, fontSize));
+		btn.setBackground(SystemColor.info);
+		btn.setMargin(new Insets(1,1,1,1));   /* Reduce internal padding */
+		btn.setFont(new Font("Dialog", fontWeight, fontSize));
 		btn.addActionListener(this);
 		btn.addKeyListener(this);
 		
@@ -284,15 +288,14 @@ public class CalculatorGUI implements ActionListener, KeyListener
     
     
     /**
-     * The method doSquareRoot calculates and shows the square root
-     * of the current number in the display area.
+     * The method doPercentage calculates and adds the percentage
+     * of the current calculation result to the display area.
      */
     private void doPercentage()
     {
     	double currentlyDisplayed = getDisplayContentsAsDouble();
         
     	double percentage = calculationResult * (currentlyDisplayed / 100.0);
-    	// sum * lastnumberentered/100
     	
         displayField.setText(resultFormat.format(percentage));
     }
