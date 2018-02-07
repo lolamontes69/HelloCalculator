@@ -49,7 +49,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 		/* Create the display panel */
 		JPanel displayPanel = new JPanel();
 		displayPanel.setBackground(Color.PINK);
-		displayPanel.setBorder(new EmptyBorder(10, 0, 5, 0));
+		displayPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
 		paddingPanel.add(displayPanel);
 		displayPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
@@ -282,6 +282,23 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
+    
+    /**
+     * The method doSquareRoot calculates and shows the square root
+     * of the current number in the display area.
+     */
+    private void doPercentage()
+    {
+    	double currentlyDisplayed = getDisplayContentsAsDouble();
+        
+    	double percentage = calculationResult * (currentlyDisplayed / 100.0);
+    	// sum * lastnumberentered/100
+    	
+        displayField.setText(resultFormat.format(percentage));
+    }
+    
+    
+    
     /**
      * The method doEqualsoperation returns the adds of the current
      * operation to the display.
@@ -464,6 +481,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     				
 				break;
 			case "%":
+				doPercentage();
 				break;
 			case "-/+":
 				toggleSign();
@@ -555,6 +573,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	    				
 					break;
 				case '%':
+					doPercentage();
 					break;
 				default:
 					break;
