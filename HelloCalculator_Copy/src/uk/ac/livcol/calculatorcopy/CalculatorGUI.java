@@ -28,7 +28,9 @@ public class CalculatorGUI implements ActionListener, KeyListener
 	private String currentOperation;
 	private String lastPressed;
 	
-	private DecimalFormat resultFormat = new DecimalFormat("#");
+	private DecimalFormat resultFormat = new DecimalFormat("#0");	
+	private DecimalFormat scientificFormat = new DecimalFormat("0.000E00");
+	
 	
 	private JTextField displayField;
 	
@@ -216,6 +218,25 @@ public class CalculatorGUI implements ActionListener, KeyListener
     }
     
     
+    
+    /**
+     * The method updateDisplayField adds a formatted 
+     * double to the display field.
+     * @param n A double to add to the display field.
+     */
+    private void updateDisplayField(double n)
+    {
+    	String result = resultFormat.format(n);
+    	
+    	if(result.length() > 15) {
+    		result = scientificFormat.format(n).toLowerCase();
+    	}
+    	
+        displayField.setText(result);
+    }
+    
+    
+    
     /**
      * The method addToDisplayField adds a character to the
      * end of the display field.
@@ -259,7 +280,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 			currentlyDisplayed = currentlyDisplayed * -1.0;
 		}
     	
-    	displayField.setText(resultFormat.format(currentlyDisplayed));
+    	updateDisplayField(currentlyDisplayed);
     	
     	/* This behaviour mimics the Windows calculator */
         if (!lastPressed.equals("Number")) {
@@ -282,7 +303,8 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	}
         
         currentlyDisplayed = Math.sqrt(currentlyDisplayed);
-        displayField.setText(resultFormat.format(currentlyDisplayed));
+        lastPressed = "SQRT";
+        updateDisplayField(currentlyDisplayed);
     }
     
     
@@ -296,8 +318,8 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	double currentlyDisplayed = getDisplayContentsAsDouble();
         
     	double percentage = calculationResult * (currentlyDisplayed / 100.0);
-    	
-        displayField.setText(resultFormat.format(percentage));
+    	lastPressed = "Percentage";
+        updateDisplayField(percentage);
     }
     
     
@@ -308,7 +330,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void doEqualsOperation()
     {
-    	if(lastPressed.equals("Number"))
+    	if(lastPressed.equals("Number") || lastPressed.equals("MR") || lastPressed.equals("SQRT") || !lastPressed.equals("Percentage"))
     	    	 lastNumberEntered = getDisplayContentsAsDouble();
         
         switch(currentOperation)
@@ -336,13 +358,17 @@ public class CalculatorGUI implements ActionListener, KeyListener
              	return;
          }
          
-     	 displayField.setText(resultFormat.format(calculationResult));
+         updateDisplayField(calculationResult);
      	 
      	 lastPressed = "Equals";
     }
     
     
-    /* Only partially implemented - needs % added */
+    /**
+     * The method performCalculation is called when an operator or '='
+     * is pressed and calculates the current result.
+     * @param operatorString The operator pressed.
+     */
     private void performCalculation(String operatorString)
     {
     	if(operatorString.equals("=")) {
@@ -353,7 +379,13 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				return;
 			}
     	}
-        if (!lastPressed.equals("Number")) {
+    	
+    	/* This allows a further operation on the result */
+    	if(lastPressed.equals("Equals"))
+    		lastPressed = "Operator";
+    	
+    	/* If there was no number proceeding the press there is nothing to calculate */
+        if (!lastPressed.equals("Number") && !lastPressed.equals("MR") && !lastPressed.equals("SQRT") && !lastPressed.equals("Percentage")) {
 			return;
 		}
         
@@ -387,7 +419,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     		
         lastPressed = "Operator";
         
-    	displayField.setText(resultFormat.format(calculationResult));
+        updateDisplayField(calculationResult);
     } 
     
     
@@ -417,9 +449,15 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void doNumberPress(String input)
     {
+    	/* If a number is pressed after getting a result, or recalling 
+    	 * the contents of memory, this starts a new calculation */
+    	if(lastPressed.equals("MR") || lastPressed.equals("Equals") || lastPressed.equals("SQRT") || lastPressed.equals("Percentage"))
+    		clearContents();
+    	
 		if(!lastPressed.equals("Number")) {
 			displayField.setText("");
 		}
+		
 		lastPressed = "Number";
 		addToDisplayField(input);
     }
@@ -432,6 +470,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void doDecimalPointPress()
     {
+    	/* If a number is pressed after getting a result, or recalling 
+    	 * the contents of memory, this starts a new calculation */
+    	if(lastPressed.equals("MR") || lastPressed.equals("Equals") || lastPressed.equals("SQRT") || lastPressed.equals("Percentage"))
+    		clearContents();
+    	
 		if(!lastPressed.equals("Number")) {
 			displayField.setText("");
 		}
@@ -504,8 +547,8 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				memoryValue = 0.0;
 				break;
 			case "MR":
-				displayField.setText(resultFormat.format(memoryValue));
-				lastPressed = "Number";
+				updateDisplayField(memoryValue);
+				lastPressed = "MR";
 				break;
 			case "M-":
 				memoryValue = memoryValue - getDisplayContentsAsDouble();
