@@ -20,17 +20,25 @@ import javax.swing.border.EmptyBorder;
 
 
 public class CalculatorGUI implements ActionListener, KeyListener
-{
-	private double calculationResult;
-	private double lastNumberEntered;
-	private double memoryValue;
-	
-	private String currentOperation;
-	private String lastPressed;
-	
+{	
 	private DecimalFormat resultFormat = new DecimalFormat("#0");	
 	private DecimalFormat scientificFormat = new DecimalFormat("0.000E00");
 	
+	private double calculationResult;
+	private double lastNumberEntered;
+	private double memoryValue;
+
+	private String currentOperation;
+	
+	private byte lastPressed;
+	
+	private byte NONE       = 0;
+	private byte NUMBER     = 1;
+	private byte MR         = 2;
+	private byte SQRT       = 3;
+	private byte PERCENTAGE = 4;
+	private byte EQUALS     = 5;
+	private byte OPERATOR   = 6;
 	
 	private JTextField displayField;
 	
@@ -41,7 +49,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	lastNumberEntered = 0.0;
     	memoryValue = 0.0;
     	currentOperation = "None";
-    	lastPressed = "None";
+    	lastPressed = NONE;
     	
 		JFrame frm = new JFrame("Calculator");
 		setFrameAttributes(frm);
@@ -213,7 +221,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	displayField.setText("0");
     	lastNumberEntered = 0.0;
     	calculationResult = 0.0;
-    	lastPressed = "None";
+    	lastPressed = NONE;
     	currentOperation = "None";
     }
     
@@ -283,7 +291,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	updateDisplayField(currentlyDisplayed);
     	
     	/* This behaviour mimics the Windows calculator */
-        if (!lastPressed.equals("Number")) {
+        if (lastPressed == NUMBER) {
 			lastNumberEntered = currentlyDisplayed;
 		}
     }
@@ -296,14 +304,23 @@ public class CalculatorGUI implements ActionListener, KeyListener
     private void doSquareRoot()
     {
     	double currentlyDisplayed = getDisplayContentsAsDouble();
+    	
+    	if(lastPressed == EQUALS)
+    	{
+        	lastNumberEntered = 0.0;
+        	calculationResult = 0.0;
+        	lastPressed = NONE;
+        	currentOperation = "None";
+    	}
+    	
     	if(currentlyDisplayed < 0.0) {
      		displayField.setText("Math Domain Error");
-     		lastPressed = "None";
+     		lastPressed = NONE;
      		return;
     	}
         
         currentlyDisplayed = Math.sqrt(currentlyDisplayed);
-        lastPressed = "SQRT";
+        lastPressed = SQRT;
         updateDisplayField(currentlyDisplayed);
     }
     
@@ -318,7 +335,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	double currentlyDisplayed = getDisplayContentsAsDouble();
         
     	double percentage = calculationResult * (currentlyDisplayed / 100.0);
-    	lastPressed = "Percentage";
+    	lastPressed = PERCENTAGE;
         updateDisplayField(percentage);
     }
     
@@ -330,7 +347,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
      */
     private void doEqualsOperation()
     {
-    	if(lastPressed.equals("Number") || lastPressed.equals("MR") || lastPressed.equals("SQRT") || !lastPressed.equals("Percentage"))
+    	if(lastPressed==NUMBER || lastPressed==MR || lastPressed==SQRT || lastPressed==PERCENTAGE)
     	    	 lastNumberEntered = getDisplayContentsAsDouble();
         
         switch(currentOperation)
@@ -339,7 +356,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
              	if(lastNumberEntered == 0.0)
              	{
              		displayField.setText("Cannot divide by 0");
-             		lastPressed = "None";
+             		lastPressed = NONE;
              		return;
              	}
              	calculationResult = calculationResult / lastNumberEntered;
@@ -360,7 +377,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
          
          updateDisplayField(calculationResult);
      	 
-     	 lastPressed = "Equals";
+     	 lastPressed = EQUALS;
     }
     
     
@@ -381,11 +398,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
     	}
     	
     	/* This allows a further operation on the result */
-    	if(lastPressed.equals("Equals"))
-    		lastPressed = "Operator";
+    	if(lastPressed == EQUALS)
+    		lastPressed = OPERATOR;
     	
     	/* If there was no number proceeding the press there is nothing to calculate */
-        if (!lastPressed.equals("Number") && !lastPressed.equals("MR") && !lastPressed.equals("SQRT") && !lastPressed.equals("Percentage")) {
+        if (lastPressed!=NUMBER && lastPressed!=MR && lastPressed!=SQRT && lastPressed!=PERCENTAGE) {
 			return;
 		}
         
@@ -397,7 +414,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
             	if(lastNumberEntered == 0.0)
             	{
             		displayField.setText("Cannot divide by 0");
-            		lastPressed = "None";
+            		lastPressed = NONE;
             		return;
             	}
             	calculationResult = calculationResult / lastNumberEntered;
@@ -413,11 +430,11 @@ public class CalculatorGUI implements ActionListener, KeyListener
         	    break;
             default:
             	calculationResult = lastNumberEntered;
-            	lastPressed = "Operator";
+            	lastPressed = OPERATOR;
             	return;
         }
     		
-        lastPressed = "Operator";
+        lastPressed = OPERATOR;
         
         updateDisplayField(calculationResult);
     } 
@@ -451,14 +468,14 @@ public class CalculatorGUI implements ActionListener, KeyListener
     {
     	/* If a number is pressed after getting a result, or recalling 
     	 * the contents of memory, this starts a new calculation */
-    	if(lastPressed.equals("MR") || lastPressed.equals("Equals") || lastPressed.equals("SQRT") || lastPressed.equals("Percentage"))
+    	if(lastPressed==MR || lastPressed==EQUALS || lastPressed==SQRT || lastPressed==PERCENTAGE)
     		clearContents();
     	
-		if(!lastPressed.equals("Number")) {
+		if(lastPressed != NUMBER) {
 			displayField.setText("");
 		}
 		
-		lastPressed = "Number";
+		lastPressed = NUMBER;
 		addToDisplayField(input);
     }
     
@@ -472,13 +489,13 @@ public class CalculatorGUI implements ActionListener, KeyListener
     {
     	/* If a number is pressed after getting a result, or recalling 
     	 * the contents of memory, this starts a new calculation */
-    	if(lastPressed.equals("MR") || lastPressed.equals("Equals") || lastPressed.equals("SQRT") || lastPressed.equals("Percentage"))
+    	if(lastPressed==MR || lastPressed==EQUALS || lastPressed==SQRT || lastPressed==PERCENTAGE)
     		clearContents();
     	
-		if(!lastPressed.equals("Number")) {
+		if(lastPressed != NUMBER) {
 			displayField.setText("");
 		}
-		lastPressed = "Number";
+		lastPressed = NUMBER;
 		
 		String test = displayField.getText();
 		if (test.contains(".")) {
@@ -515,7 +532,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 			case "/": case "X": case "-": case "+": case "=":
 				performCalculation(pressString);
 				
-				if(lastPressed.equals("None")) {
+				if(lastPressed == NONE) {
 					currentOperation = "None";
 					calculationResult = 0.0;
 					lastNumberEntered = 0.0;
@@ -534,7 +551,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				break;
 			case "SQRT":
 				doSquareRoot();
-				if(lastPressed.equals("None")) {
+				if(lastPressed == NONE) {
 					currentOperation = "None";
 					calculationResult = 0.0;
 					lastNumberEntered = 0.0;
@@ -548,7 +565,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				break;
 			case "MR":
 				updateDisplayField(memoryValue);
-				lastPressed = "MR";
+				lastPressed = MR;
 				break;
 			case "M-":
 				memoryValue = memoryValue - getDisplayContentsAsDouble();
@@ -607,7 +624,7 @@ public class CalculatorGUI implements ActionListener, KeyListener
 				case '/': case 'X': case '-': case '+': case '=':
 					performCalculation("" + input);
 					
-					if(lastPressed.equals("None")) {
+					if(lastPressed == NONE) {
 						currentOperation = "None";
 						calculationResult = 0.0;
 						lastNumberEntered = 0.0;
